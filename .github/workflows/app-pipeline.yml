@@ -1,0 +1,31 @@
+name: PFS - Application CI Pipeline
+
+on:
+  push:
+    branches:
+      - ibtihal
+    paths:
+      - 'app/test-p2/**'
+      - '.github/workflows/app-pipeline.yml'
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: |
+          docker build -t pfs-test-p2:latest ./app/test-p2
+
+      - name: Verify Docker image
+        run: |
+          docker image inspect pfs-test-p2:latest
