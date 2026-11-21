@@ -36,3 +36,12 @@ jobs:
           format: spdx-json
           output-file: sbom.spdx.json
           upload-artifact: true
+      - name: Scan SBOM with Grype
+        run: |
+          test -s sbom.spdx.json
+
+          docker run --rm \
+            -v "$PWD:/workspace:ro" \
+            anchore/grype:latest \
+            sbom:/workspace/sbom.spdx.json \
+            -o table
