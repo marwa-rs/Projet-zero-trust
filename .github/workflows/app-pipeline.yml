@@ -29,3 +29,10 @@ jobs:
       - name: Verify Docker image
         run: |
           docker image inspect pfs-test-p2:latest
+      - name: Generate SBOM with Syft
+        uses: anchore/sbom-action@v0
+        with:
+          image: pfs-test-p2:latest
+          format: spdx-json
+          output-file: sbom.spdx.json
+          upload-artifact: true
