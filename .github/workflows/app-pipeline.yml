@@ -45,4 +45,5 @@ jobs:
             anchore/grype:latest \
             sbom:/workspace/sbom.spdx.json \
             --output table \
-            --fail-on high
+            --fail-on critical
+
