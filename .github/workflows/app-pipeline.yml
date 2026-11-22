@@ -44,4 +44,5 @@ jobs:
             -v "$PWD:/workspace:ro" \
             anchore/grype:latest \
             sbom:/workspace/sbom.spdx.json \
-            -o table
+            --output table \
+            --fail-on critical
