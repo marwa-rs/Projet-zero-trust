@@ -1,6 +1,6 @@
 # Noms provisoires : à remplacer par ceux d'Ibtihal
 locals {
-  depots_ecr = ["frontend", "api"]
+  depots_ecr = ["frontend", "api", "test-p2"]
 }
 
 resource "aws_ecr_repository" "depot" {
