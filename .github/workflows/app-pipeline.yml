@@ -55,15 +55,18 @@ jobs:
             --fail-on critical
 
       - name: Configure AWS credentials
+        if: ${{ vars.ENABLE_AWS_ECR == 'true' }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ env.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amozon ECR
+        if: ${{ vars.ENABLE_AWS_ECR == 'true' }}
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Tag and push Docker image to ECR
+        if: ${{ vars.ENABLE_AWS_ECR == 'true' }}
         env:
           IMAGE_TAG: ${{ github.sha }}
         run: |
@@ -73,13 +76,16 @@ jobs:
           echo "IMAGE_URI=$IMAGE_URI" >> "$GITHUB_ENV"
 
       - name: Install Cosign
+        if: ${{ vars.ENABLE_AWS_ECR == 'true' }}
         uses: sigstore/cosign-installer@v3
 
       - name: Sign Docker image with Cosign
+        if: ${{ vars.ENABLE_AWS_ECR == 'true' }}
         run: |
           cosign sign --yes "$IMAGE_URI"
 
       - name: Verify Docker image signature
+        if: ${{ vars.ENABLE_AWS_ECR == 'true' }}
         run: |
           cosign verify \
             --certificate-identity "https://github.com/marwa-rs/Projet-zero-trust/.github/workflows/app-pipeline.yml@refs/heads/ibtihal" \
@@ -87,7 +93,7 @@ jobs:
             "$IMAGE_URI"
 
       - name: Attest SBOM with Cosign
-        if: ${{ env.AWS_ROLE_ARN != '' }}
+        if: ${{ vars.ENABLE_AWS_ECR == 'true' }}
         run: |
           cosign attest --yes \
             --predicate sbom.spdx.json \
@@ -95,7 +101,7 @@ jobs:
             "$IMAGE_URI"
 
       - name: Verify SBOM attestation
-        if: ${{ env.AWS_ROLE_ARN != '' }}
+        if: ${{ vars.ENABLE_AWS_ECR == 'true' }}
         run: |
           cosign verify-attestation \
             --type spdxjson \
