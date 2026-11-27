@@ -3,10 +3,6 @@ name: Pipeline infrastructure
 on:
   pull_request:
     branches: [main]
-    paths:
-      - "infra/**"
-      - ".checkov.yaml"
-      - ".github/workflows/infra-pipeline.yml"
 
 permissions:
   contents: read
