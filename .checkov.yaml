@@ -1,0 +1,14 @@
+framework:
+  - terraform
+compact: true
+skip-check:
+  # Journalisation des accès S3 : demande un second bucket, inutile pour le projet
+  - CKV_AWS_18
+  # Réplication dans une autre région : coût doublé, région unique imposée
+  - CKV_AWS_144
+  # Chiffrement KMS : payant, le chiffrement AES256 est déjà activé
+  - CKV_AWS_145
+  # Cycle de vie S3 : on garde tout l'historique de l'état Terraform
+  - CKV2_AWS_61
+  # Notifications S3 : aucun usage pour un bucket d'état
+  - CKV2_AWS_62

@@ -1,0 +1,48 @@
+name: Pipeline infrastructure
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  TF_VERSION: "1.16.5"
+  CHECKOV_VERSION: "3.4.11"
+
+jobs:
+  verifications:
+    name: Vérifications Terraform
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v5
+
+      - name: Installation de Terraform
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Format du code
+        run: terraform fmt -check -recursive infra
+
+      - name: Validation de chaque dossier
+        run: |
+          for dir in $(find infra -name "*.tf" -exec dirname {} \; | sort -u); do
+            echo "Validation de $dir"
+            terraform -chdir="$dir" init -backend=false -input=false
+            terraform -chdir="$dir" validate
+          done
+
+      - name: Installation de Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Installation de Checkov
+        run: pip install "checkov==${CHECKOV_VERSION}"
+
+      - name: Analyse de sécurité
+        run: checkov -d infra --config-file .checkov.yaml
